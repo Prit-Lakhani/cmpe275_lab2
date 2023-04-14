@@ -30,7 +30,7 @@ public class EmployerService {
             return new ResponseEntity<>(errorMessage("Bad Request", "409", "Employer with the same name is already exists."), HttpStatus.CONFLICT);
         }
 
-
+        //Creating JSON Object
         JSONObject employerJSON = new JSONObject();
         System.out.println("creating employer..");
         Employer newEmployer = new Employer(name, description, employerId);
