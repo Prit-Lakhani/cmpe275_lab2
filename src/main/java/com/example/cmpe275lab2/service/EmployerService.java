@@ -26,8 +26,8 @@ public class EmployerService {
     public ResponseEntity<?> createEmployer(String name, String description, String employerId) throws JSONException {
         Employer e_name = employerRepository.findByName(name);
 
-        if(e_name != null){
-            return new ResponseEntity<>(errorMessage("Bad Request", "409", "Employer with the same name is already exists."), HttpStatus.CONFLICT);
+        if (e_name != null) {
+            return new ResponseEntity<>(errorMessage("Bad Request", "409", "Employer with the same name is already exist."), HttpStatus.CONFLICT);
         }
 
         //Creating JSON Object
@@ -41,22 +41,64 @@ public class EmployerService {
         employerJSON.put("description", description);
         employerJSON.put("employerId", employerId);
 
-        return new ResponseEntity<>(employerJSON.toString(), HttpStatus.CREATED);
+        return new ResponseEntity<>(employerJSON.toString(), HttpStatus.OK);
     }
 
-    public String errorMessage(String header, String code, String message){
-        JSONObject result = new JSONObject();
-        JSONObject error = new JSONObject();
+    //Get an employer by ID
+    public ResponseEntity<?> getEmployer(long id, String responseType) {
+        Employer employer = employerRepository.findById(id);
 
-        try{
-            result.put(header, error);
-            error.put("code", code);
-            error.put("msg", message);
-        }catch(Exception e){
-            System.out.println("errorMessage() catch");
+        if (employer != null) {
+
+            if (responseType.equals("json"))
+                return new ResponseEntity<>(employerToJSONString(employer), HttpStatus.OK);
+            else
+                return  new ResponseEntity<>(employer,HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(errorMessage("BadRequest", "404", "Sorry, the requested employer with id "
+                    + id +" does not exist"), HttpStatus.NOT_FOUND);
         }
 
-        return result.toString();
+//            return new ResponseEntity<>(employerToJSONString(employer), HttpStatus.OK);
+        }
+
+
+    //converting employer to JSON
+    private String employerToJSONString (Employer employer){
+        JSONObject json = new JSONObject();
+        JSONObject fields = new JSONObject();
+
+        try {
+            json.put("employer", fields);
+
+            fields.put("id", employer.getId());
+            fields.put("employerId", employer.getEmployerId());
+            fields.put("name", employer.getName());
+            fields.put("description", employer.getDescription());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return json.toString();
     }
+
+
+        //Generating Error Message
+        public String errorMessage(String header, String code, String message){
+            JSONObject result = new JSONObject();
+            JSONObject error = new JSONObject();
+
+            try {
+                result.put(header, error);
+                error.put("code", code);
+                error.put("msg", message);
+            } catch (Exception e) {
+                System.out.println("errorMessage() catch");
+            }
+
+            return result.toString();
+        }
+
 
 }

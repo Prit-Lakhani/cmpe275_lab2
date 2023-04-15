@@ -37,4 +37,17 @@ public class EmployerController {
         return newEmployer;
     }
 
+    //getting employer
+    @RequestMapping(value = "/employer/{id}", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity<?> getEmoployer(
+           @PathVariable long id,
+           @RequestParam(value = "format", required = false) String format
+    ) {
+        String responseType = "json";
+
+        if(format != null && format.equals("true")){
+            responseType = "xml";
+        }
+        return employerService.getEmployer(id, responseType);
+    }
 }
